@@ -11,9 +11,9 @@ If you are looking for the Approov quickstarts to integrate Approov in your Ruby
 
 To learn more about each Hello server example you need to read the README for each one at:
 
-* [Unprotected Server](./src/unprotected-server)
-* [Approov Protected Server - Token Check](./src/approov-protected-server/token-check)
-* [Approov Protected Server - Token Binding Check](./src/approov-protected-server/token-binding-check)
+* [Unprotected Server](./src/unprotected-server/hello)
+* [Approov Protected Server - Token Check](./src/approov-protected-server/token-check/hello)
+* [Approov Protected Server - Token Binding Check](./src/approov-protected-server/token-binding-check/hello)
 
 
 ## Docker Stack

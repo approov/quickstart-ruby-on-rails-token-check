@@ -57,6 +57,22 @@ rails server --port 8002
 
 > **NOTE:** If running the server inside a docker container add `--binding 0.0.0.0.`, otherwise the Ruby on Rails API server will not answer requests from outside the container, like the ones you may want to do from cURL or Postman to test the API.
 
+Next, you can test that it works with:
+
+```bash
+curl -iX GET 'http://localhost:8002'
+```
+
+The response will be a `401` unauthorized request:
+
+```text
+HTTP/1.1 401 Unauthorized
+Content-Type: application/json
+Transfer-Encoding: chunked
+```
+
+The reason you got a `401` is because no Approoov token isn't provided in the headers of the request.
+
 Finally, you can test that the Approov integration example works as expected with this [Postman collection](/README.md#testing-with-postman) or with some cURL requests [examples](/README.md#testing-with-curl).
 
 [TOC](#toc---table-of-contents)
