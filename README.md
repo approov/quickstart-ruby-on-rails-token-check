@@ -7,93 +7,169 @@ This repo implements the Approov server-side request verification code in Ruby, 
 This is an Approov integration quickstart example for the Ruby on Rails framework. If you are looking for another Ruby integration you can check our list of [quickstarts](https://approov.io/docs/latest/approov-integration-examples/backend-api/), and if you don't find what you are looking for, then please let us know [here](https://approov.io/contact). Meanwhile, you can always use the framework agnostic [quickstart example](https://github.com/approov/quickstart-ruby-token-check) for Ruby, and you may find that's easily adaptable to your framework of choice.
 
 
-## TOC - Table of Contents
+## Approov Integration Quickstart
 
-* [Why?](#why)
-* [How it Works?](#how-it-works)
-* [Quickstarts](#approov-integration-quickstarts)
-* [Examples](#approov-integration-examples)
-* [Useful Links](#useful-links)
+The quickstart was tested with the following Operating Systems:
 
+* Ubuntu 20.04
+* MacOS Big Sur
+* Windows 10 WSL2 - Ubuntu 20.04
 
-## Why?
+First, setup the [Appoov CLI](https://approov.io/docs/latest/approov-installation/index.html#initializing-the-approov-cli).
 
-You can learn more about Approov, the motives for adopting it, and more detail on how it works by following this [link](https://approov.io/product). In brief, Approov:
+Now, register the API domain for which Approov will issues tokens:
 
-* Ensures that accesses to your API come from official versions of your apps; it blocks accesses from republished, modified, or tampered versions
-* Protects the sensitive data behind your API; it prevents direct API abuse from bots or scripts scraping data and other malicious activity
-* Secures the communication channel between your app and your API with [Approov Dynamic Certificate Pinning](https://approov.io/docs/latest/approov-usage-documentation/#approov-dynamic-pinning). This has all the benefits of traditional pinning but without the drawbacks
-* Removes the need for an API key in the mobile app
-* Provides DoS protection against targeted attacks that aim to exhaust the API server resources to prevent real users from reaching the service or to at least degrade the user experience.
-
-[TOC](#toc---table-of-contents)
-
-
-## How it works?
-
-This is a brief overview of how the Approov cloud service and the Ruby on Rails API server fit together from a backend perspective. For a complete overview of how the mobile app and backend fit together with the Approov cloud service and the Approov SDK we recommend to read the [Approov overview](https://approov.io/product) page on our website.
-
-### Approov Cloud Service
-
-The Approov cloud service attests that a device is running a legitimate and tamper-free version of your mobile app.
-
-* If the integrity check passes then a valid token is returned to the mobile app
-* If the integrity check fails then a legitimate looking token will be returned
-
-In either case, the app, unaware of the token's validity, adds it to every request it makes to the Approov protected API(s).
-
-### Ruby on Rails API Server
-
-The Ruby on Rails API server ensures that the token supplied in the `Approov-Token` header is present and valid. The validation is done by using a shared secret known only to the Approov cloud service and the Ruby on Rails API server.
-
-The request is handled such that:
-
-* If the Approov Token is valid, the request is allowed to be processed by the API endpoint
-* If the Approov Token is invalid, an HTTP 401 Unauthorized response is returned
-
-You can choose to log JWT verification failures, but we left it out on purpose so that you can have the choice of how you prefer to do it and decide the right amount of information you want to log.
-
->#### System Clock
->
->In order to correctly check for the expiration times of the Approov tokens is very important that the Ruby backend server is synchronizing automatically the system clock over the network with an authoritative time source. In Linux this is usually done with a NTP server.
-
-[TOC](#toc---table-of-contents)
-
-
-## Approov Integration Quickstarts
-
-The quickstart code for the Approov Ruby on Rails API server is split into two implementations. The first gets you up and running with basic token checking. The second uses a more advanced Approov feature, _token binding_. Token binding may be used to link the Approov token with other properties of the request, such as user authentication (more details can be found [here](https://approov.io/docs/latest/approov-usage-documentation/#token-binding)).
-* [Approov token check quickstart](/docs/APPROOV_TOKEN_QUICKSTART.md)
-* [Approov token check with token binding quickstart](/docs/APPROOV_TOKEN_BINDING_QUICKSTART.md)
-
-Both the quickstarts are built from the unprotected example server defined in this Ruby on Rails [project](/src/unprotected-server/).
-
-You can use Git to see the code differences between the two quickstarts:
-
-```
-git diff --no-index src/approov-protected-server/token-check/hello/app/middlewares/approov_middleware.rb src/approov-protected-server/token-binding-check/hello/app/middlewares/approov_middleware.rb
+```bash
+approov api -add api.example.com
 ```
 
-[TOC](#toc---table-of-contents)
+Next, enable your Approov `admin` role with:
+
+```bash
+eval `approov role admin`
+```
+
+Now, get your Approov Secret with the [Appoov CLI](https://approov.io/docs/latest/approov-installation/index.html#initializing-the-approov-cli):
+
+```bash
+approov secret -get base64
+```
+
+Next, add the [Approov secret](https://approov.io/docs/latest/approov-usage-documentation/#account-secret-key-export) to your project `.env` file:
+
+```env
+APPROOV_BASE64_SECRET=approov_base64_secret_here
+```
+
+Now, add to your Gemfile the [dotenv-rails](https://github.com/bkeepers/dotenv) gem to automatically load the Approov secret:
+
+```ruby
+gem 'dotenv-rails', '~> 2.7.6'
+```
+
+Next, to check the Approov token you need to add the [jwt/ruby-jwt](https://github.com/jwt/ruby-jwt) gem to your Gemfile:
+
+```ruby
+gem 'jwt', '~> 2.2.2'
+```
+
+Now, run the installer:
+
+```bash
+bundle install
+```
+
+Next, add the [Approov Middleware](/src/approov-protected-server/token-check/hello/app/middlewares/approov_middleware.rb) class to your project at `app/middlewares/approov_middleware.rb`:
+
+```ruby
+class ApproovMiddleware
+    def initialize app
+        @app = app
+
+        if not ENV['APPROOV_BASE64_SECRET']
+            raise "Missing in the .env file the value for the variable: APPROOV_BASE64_SECRET"
+        end
+
+        @APPROOV_SECRET = Base64.decode64(ENV['APPROOV_BASE64_SECRET'])
+    end
+
+    def call env
+        # Make the code thread safe by duplicating the object
+        dup._call env
+    end
+
+    def _call env
+        # We return 401 with an empty body because we don't want to give clues
+        # to the attacker about why he is failing the request, and you can go
+        # even further and return a 400.
+        invalid_response = [401, {"Content-Type" => "application/json"}, []]
+
+        request = Rack::Request.new env
+
+        approov_token_claims = verifyApproovToken(request)
+
+        if not approov_token_claims
+            return invalid_response
+        end
+
+        # Allow later reuse of the Approov token claims in request life cycle.
+        env["APPROOV_TOKEN_CLAIMS"] = approov_token_claims
+
+        return @app.call(env)
+    end
+
+    def verifyApproovToken request
+        begin
+            approov_token = request.get_header "HTTP_APPROOV_TOKEN"
+
+            if not approov_token
+                # You may want to add some logging here
+                # Rails.logger.debug 'Missing the Approov token header!'
+                return nil
+            end
+
+            options = { algorithm: 'HS256' }
+            approov_token_claims, header = JWT.decode approov_token, @APPROOV_SECRET, true, options
+
+            return approov_token_claims
+
+        rescue JWT::DecodeError => e
+            # You may want to add some logging here
+            # Rails.logger.debug e
+            return nil
+        rescue JWT::ExpiredSignature => e
+            # You may want to add some logging here
+            # Rails.logger.debug e
+            return nil
+        rescue JWT::InvalidIssuerError => e
+            # You may want to add some logging here
+            # Rails.logger.debug e
+            return nil
+        rescue JWT::InvalidIatError => e
+            # You may want to add some logging here
+            # Rails.logger.debug e
+            return nil
+        end
+
+        # You may want to add some logging here
+        # Rails.logger.debug 'Whoops, unknown failure when verifying the Approov token!'
+        return nil
+    end
+end
+```
+
+> **NOTE:** When the Approov token validation fails we return a `401` with an empty body, because we don't want to give clues to an attacker about the reason the request failed, and you can go even further by returning a `400`.
 
 
-## Approov Integration Examples
+Now, add the [Approov Middleware](/src/approov-protected-server/token-check/hello/app/middlewares/approov_middleware.rb) to your Ruby on Rails application middleware configuration at [config/application.rb](/src/approov-protected-server/token-binding-check/hello/config/application.rb):
 
-The code examples for the Approov quickstarts are extracted from this simple [Approov integration examples](/src/approov-protected-server), that you can run from your computer to play around with the Approov integration and gain a better understanding of how simple and easy it is to integrate Approov in a Ruby API server.
+```ruby
+# Inserted as the first middleware to protect your server from wasting
+# resources in processing requests not having a valid Approov token. This
+# increases availability for your users during peak time or in the event of a
+# DoS attack.
+config.middleware.insert_before ActionDispatch::HostAuthorization, ApproovMiddleware
+```
 
-### Testing with Postman
+Not enough details in the bare bones quickstart? No worries, check the [detailed quickstarts](QUICKSTARTS.md) that contain a more comprehensive set of instructions, including how to test the Approov integration.
 
-A ready-to-use Postman collection can be found [here](https://raw.githubusercontent.com/approov/postman-collections/master/quickstarts/hello-world/hello-world.postman_collection.json). It contains a comprehensive set of example requests to send to the Ruby on Rails API server for testing. The collection contains requests with valid and invalid Approov tokens, and with and without token binding.
 
-### Testing with Curl
+## More Information
 
-An alternative to the Postman collection is to use cURL to make the API requests. Check some examples [here](https://github.com/approov/postman-collections/blob/master/quickstarts/hello-world/hello-world.postman_curl_requests_examples.md).
+* [Approov Overview](OVERVIEW.md)
+* [Detailed Quickstarts](QUICKSTARTS.md)
+* [Examples](EXAMPLES.md)
+* [Testing](TESTING.md)
 
-### The Dummy Secret
 
-The valid Approov tokens in the Postman collection and cURL requests examples were signed with a dummy secret that was generated with `openssl rand -base64 64 | tr -d '\n'; echo`, therefore not a production secret retrieved with `approov secret -get base64`, thus in order to use it you need to set the `APPROOV_BASE64_SECRET`, in the `.env` file for each [Approov integration example](/src/approov-protected-server), to the following value: `h+CX0tOzdAAR9l15bWAqvq7w9olk66daIH+Xk+IAHhVVHszjDzeGobzNnqyRze3lw/WVyWrc2gZfh3XXfBOmww==`.
+### System Clock
 
-[TOC](#toc---table-of-contents)
+In order to correctly check for the expiration times of the Approov tokens is very important that the backend server is synchronizing automatically the system clock over the network with an authoritative time source. In Linux this is usually done with a NTP server.
+
+
+## Issues
+
+If you find any issue while following our instructions then just report it [here](https://github.com/approov/quickstart-ruby-token-check/issues), with the steps to reproduce it, and we will sort it out and/or guide you to the correct path.
 
 
 ## Useful Links
@@ -101,14 +177,12 @@ The valid Approov tokens in the Postman collection and cURL requests examples we
 If you wish to explore the Approov solution in more depth, then why not try one of the following links as a jumping off point:
 
 * [Approov Free Trial](https://approov.io/signup)(no credit card needed)
+* [Approov Get Started](https://approov.io/product/demo)
 * [Approov QuickStarts](https://approov.io/docs/latest/approov-integration-examples/)
-* [Approov Live Demo](https://approov.io/product/demo)
 * [Approov Docs](https://approov.io/docs)
-* [Approov Blog](https://blog.approov.io)
+* [Approov Blog](https://approov.io/blog/)
 * [Approov Resources](https://approov.io/resource/)
 * [Approov Customer Stories](https://approov.io/customer)
 * [Approov Support](https://approov.zendesk.com/hc/en-gb/requests/new)
 * [About Us](https://approov.io/company)
 * [Contact Us](https://approov.io/contact)
-
-[TOC](#toc---table-of-contents)
