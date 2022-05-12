@@ -4,7 +4,7 @@
 
 This repo implements the Approov server-side request verification code in Ruby, which performs the verification check before allowing valid traffic to be processed by the API endpoint.
 
-This is an Approov integration quickstart example for the Ruby on Rails framework. If you are looking for another Ruby integration you can check our list of [quickstarts](https://approov.io/docs/latest/approov-integration-examples/backend-api/), and if you don't find what you are looking for, then please let us know [here](https://approov.io/contact). Meanwhile, you can always use the framework agnostic [quickstart example](https://github.com/approov/quickstart-ruby-token-check) for Ruby, and you may find that's easily adaptable to your framework of choice.
+This is an Approov integration quickstart example for the Ruby on Rails framework. If you are looking for another Ruby integration you can check our list of [quickstarts](https://approov.io/docs/latest/approov-integration-examples/backend-api/), and if you don't find what you are looking for, then please let us know [here](https://approov.io/contact). Meanwhile, you can always use the framework agnostic [quickstart example](https://github.com/approov/quickstart-ruby-on-rails-token-check) for Ruby, and you may find that's easily adaptable to your framework of choice.
 
 
 ## Approov Integration Quickstart
@@ -169,7 +169,7 @@ In order to correctly check for the expiration times of the Approov tokens is ve
 
 ## Issues
 
-If you find any issue while following our instructions then just report it [here](https://github.com/approov/quickstart-ruby-token-check/issues), with the steps to reproduce it, and we will sort it out and/or guide you to the correct path.
+If you find any issue while following our instructions then just report it [here](https://github.com/approov/quickstart-ruby-on-rails-token-check/issues), with the steps to reproduce it, and we will sort it out and/or guide you to the correct path.
 
 
 ## Useful Links

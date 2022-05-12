@@ -31,7 +31,7 @@ git diff --no-index src/approov-protected-server/token-check/hello-server-protec
 
 ## Issues
 
-If you find any issue while following our instructions then just report it [here](https://github.com/approov/quickstart-ruby-token-check/issues), with the steps to reproduce it, and we will sort it out and/or guide you to the correct path.
+If you find any issue while following our instructions then just report it [here](https://github.com/approov/quickstart-ruby-on-rails-token-check/issues), with the steps to reproduce it, and we will sort it out and/or guide you to the correct path.
 
 
 ## Useful Links
