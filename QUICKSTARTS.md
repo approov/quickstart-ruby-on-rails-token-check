@@ -9,24 +9,24 @@ The quickstart code for the Approov backend server is split into two implementat
 * [Approov token check quickstart](/docs/APPROOV_TOKEN_QUICKSTART.md)
 * [Approov token check with token binding quickstart](/docs/APPROOV_TOKEN_BINDING_QUICKSTART.md)
 
-Both the quickstarts are built from the unprotected example server defined [here](/src/unprotected-server/hello-server-unprotected.rb), thus you can use Git to see the code differences between them.
+Both the quickstarts are built from the unprotected example server defined [here](/src/unprotected-server/hello), thus you can use Git to see the code differences between them.
 
 Code difference between the Approov token check quickstart and the original unprotected server:
 
 ```
-git diff --no-index src/unprotected-server/hello-server-unprotected.rb src/approov-protected-server/token-check/hello-server-protected.rb
+git diff --no-index src/unprotected-server/hello src/approov-protected-server/token-check/hello
 ```
 
 You can do the same for the Approov token binding quickstart:
 
 ```
-git diff --no-index src/unprotected-server/hello-server-unprotected.rb src/approov-protected-server/token-binding-check/hello-server-protected.rb
+git diff --no-index src/unprotected-server/hello src/approov-protected-server/token-binding-check/hello
 ```
 
 Or you can compare the code difference between the two quickstarts:
 
 ```
-git diff --no-index src/approov-protected-server/token-check/hello-server-protected.rb src/approov-protected-server/token-binding-check/hello-server-protected.rb
+git diff --no-index src/approov-protected-server/token-check/hello src/approov-protected-server/token-binding-check/hello
 ```
 
 ## Issues
