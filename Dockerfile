@@ -1,4 +1,4 @@
-ARG TAG=3.1
+ARG TAG=3.1.2
 
 FROM ruby:${TAG}
 
@@ -39,10 +39,12 @@ USER ${CONTAINER_USER}
 ENV USER ${CONTAINER_USER}
 ENV LANG "${LOCALIZATION}"
 ENV LANGUAGE "${LOCALE_STRING}:${LANGUAGE_CODE}"
-ENV PATH=/home/${CONTAINER_USER}/.local/bin:${PATH}
 ENV LC_ALL "${LOCALIZATION}"
+ENV BUNDLE_PATH=/home/${CONTAINER_USER}/.local
+ENV GEM_HOME=/home/${CONTAINER_USER}/.local
+ENV PATH=/home/${CONTAINER_USER}/.local/bin:${PATH}
 
-RUN gem install rails bundler
+RUN gem install bundler rails
 
 WORKDIR /home/${CONTAINER_USER}/workspace
 

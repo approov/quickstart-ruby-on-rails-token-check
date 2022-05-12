@@ -3,7 +3,7 @@ version: "2.3"
 services:
 
   unprotected-server:
-    image: approov/ruby:3.1
+    image: approov/ruby:3.1.2
     build: ./
     networks:
       - default
@@ -15,7 +15,7 @@ services:
       - .local/bundle:/usr/local/bundle
 
   approov-token-check:
-    image: approov/ruby:3.1
+    image: approov/ruby:3.1.2
     build: ./
     networks:
       - default
@@ -27,7 +27,7 @@ services:
       - .local/bundle:/usr/local/bundle
 
   approov-token-binding-check:
-    image: approov/ruby:3.1
+    image: approov/ruby:3.1.2
     build: ./
     networks:
       - default
