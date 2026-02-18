@@ -9,17 +9,17 @@ This project provides a server-side example of Approov token verification for a 
 
 In this quickstart, Approov token checks are implemented in `app/middleware/approov_middleware.rb`. The responsibilities break down as follows:
 
-1. **JWT Approov token validation (signature + expiry)** is in [verify_approov_token + validate_expiration!](https://github.com/approov/quickstart-ruby-on-rails-token-check/blob/refactor/ruby-on-rails/app/middleware/approov_middleware.rb#L146-L167). It verifies the HS256 signature and rejects tokens with a missing, invalid, or expired `exp` claim.
+1. **JWT Approov token validation (signature + expiry)** is in [verify_approov_token + validate_expiration!](https://github.com/approov/quickstart-ruby-on-rails-token-check/blob/refactor/ruby-on-rails-quickstart/app/middleware/approov_middleware.rb#L146-L167). It verifies the HS256 signature and rejects tokens with a missing, invalid, or expired `exp` claim.
 
-2. **Token binding (`pay` + hash)** is handled by [extract_binding_value + ApproovMiddleware.binding_hash + binding_valid?](https://github.com/approov/quickstart-ruby-on-rails-token-check/blob/refactor/ruby-on-rails/app/middleware/approov_middleware.rb#L169-L231). It computes `base64(sha256(binding_input))` and compares it to `pay`.
+2. **Token binding (`pay` + hash)** is handled by [extract_binding_value + ApproovMiddleware.binding_hash + binding_valid?](https://github.com/approov/quickstart-ruby-on-rails-token-check/blob/refactor/ruby-on-rails-quickstart/app/middleware/approov_middleware.rb#L169-L231). It computes `base64(sha256(binding_input))` and compares it to `pay`.
 
-3. **Middleware enforcement** is done by [ApproovMiddleware#call + unauthorized_response](https://github.com/approov/quickstart-ruby-on-rails-token-check/blob/refactor/ruby-on-rails/app/middleware/approov_middleware.rb#L239-L271). Requests without a valid token or valid binding are rejected with `401 Unauthorized`.
+3. **Middleware enforcement** is done by [ApproovMiddleware#call + unauthorized_response](https://github.com/approov/quickstart-ruby-on-rails-token-check/blob/refactor/ruby-on-rails-quickstart/app/middleware/approov_middleware.rb#L239-L271). Requests without a valid token or valid binding are rejected with `401 Unauthorized`.
 
-4. **Binding value selection (what gets hashed)** is in [PROTECTED_ROUTES](https://github.com/approov/quickstart-ruby-on-rails-token-check/blob/refactor/ruby-on-rails/app/middleware/approov_middleware.rb#L66-L70) and extracted by [extract_binding_value](https://github.com/approov/quickstart-ruby-on-rails-token-check/blob/refactor/ruby-on-rails/app/middleware/approov_middleware.rb#L169-L174). It uses headers configured per route (`Authorization` for single binding, or `Authorization` + `SessionId` for double binding).
+4. **Binding value selection (what gets hashed)** is in [PROTECTED_ROUTES](https://github.com/approov/quickstart-ruby-on-rails-token-check/blob/refactor/ruby-on-rails-quickstart/app/middleware/approov_middleware.rb#L66-L70) and extracted by [extract_binding_value](https://github.com/approov/quickstart-ruby-on-rails-token-check/blob/refactor/ruby-on-rails-quickstart/app/middleware/approov_middleware.rb#L169-L174). It uses headers configured per route (`Authorization` for single binding, or `Authorization` + `SessionId` for double binding).
 
-5. **Protected route requirements** are defined in [required_headers_for_path + required_headers_for](https://github.com/approov/quickstart-ruby-on-rails-token-check/blob/refactor/ruby-on-rails/app/middleware/approov_middleware.rb#L139-L199).
+5. **Protected route requirements** are defined in [required_headers_for_path + required_headers_for](https://github.com/approov/quickstart-ruby-on-rails-token-check/blob/refactor/ruby-on-rails-quickstart/app/middleware/approov_middleware.rb#L139-L199).
 
-6. **Protected routes are registered** in [config/routes.rb](https://github.com/approov/quickstart-ruby-on-rails-token-check/blob/refactor/ruby-on-rails/config/routes.rb#L3-L17). Protected endpoints are `/token-check`, `/token-binding`, and `/token-double-binding`.
+6. **Protected routes are registered** in [config/routes.rb](https://github.com/approov/quickstart-ruby-on-rails-token-check/blob/refactor/ruby-on-rails-quickstart/app/middleware/approov_middleware.rb#L3-L17). Protected endpoints are `/token-check`, `/token-binding`, and `/token-double-binding`.
 
 ## Approov Token Verification Flow
 
