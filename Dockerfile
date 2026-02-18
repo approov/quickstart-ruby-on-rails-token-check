@@ -10,7 +10,11 @@ WORKDIR /app
 
 COPY . .
 
-RUN bundle config set without 'development test' \
+RUN apt-get update -qq \
+    && apt-get install --no-install-recommends -y build-essential libyaml-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && bundle config set without 'development test' \
     && bundle install
+
 # Provide APP_START_CMD via --env-file.
 CMD ["bash", "scripts/build.sh"]
