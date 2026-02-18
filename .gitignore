@@ -1,1 +1,33 @@
+# macOS
+.DS_Store
+
+# Environment / secrets
 .env
+.env.*
+!.env.example
+
+# Bundler / Ruby
+/.bundle/
+/vendor/bundle/
+*.gem
+
+# Rails logs and temp files
+/log/*
+!/log/.keep
+/tmp/*
+!/tmp/.keep
+!/tmp/pids/
+!/tmp/pids/.keep
+
+# Runtime artifacts
+/tmp/pids/*.pid
+/tmp/pids/*.state
+
+# Test artifacts
+/.config/
+/coverage/
+
+# Editor files
+*.swp
+*.swo
+*~
