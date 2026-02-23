@@ -9,5 +9,10 @@ Rails.application.configure do
   config.cache_store = :null_store
 
   config.log_level = :info
+  # Show Rails + middleware logs in the Puma terminal when running locally.
+  stdout_logger = ActiveSupport::Logger.new($stdout)
+  stdout_logger.formatter = config.log_formatter
+  config.logger = ActiveSupport::TaggedLogging.new(stdout_logger)
+
   config.action_dispatch.show_exceptions = true
 end

@@ -19,7 +19,7 @@ In this quickstart, Approov token checks are implemented in `app/middleware/appr
 
 5. **Protected route requirements** are defined in [required_headers_for_path + required_headers_for](https://github.com/approov/quickstart-ruby-on-rails-token-check/blob/refactor/ruby-on-rails-quickstart/app/middleware/approov_middleware.rb#L139-L199).
 
-6. **Protected routes are registered** in [config/routes.rb](https://github.com/approov/quickstart-ruby-on-rails-token-check/blob/refactor/ruby-on-rails-quickstart/app/middleware/approov_middleware.rb#L3-L17). Protected endpoints are `/token-check`, `/token-binding`, and `/token-double-binding`.
+6. **Protected routes are registered** in [config/routes.rb](https://github.com/approov/quickstart-ruby-on-rails-token-check/blob/refactor/ruby-on-rails-quickstart/config/routes.rb#L3-L17). Protected endpoints are `/token-check`, `/token-binding`, and `/token-double-binding`.
 
 ## Approov Token Verification Flow
 
@@ -238,7 +238,7 @@ curl -X GET http://localhost:8080/approov-state       # check current state
 ```text
 * Runtime: Ruby 4.0.1
 * Framework: Ruby on Rails 8.1.2
-* Build Tool: Bunder 4.0.3
+* Build Tool: Bundler 4.0.3
 ```
 
 If you encounter any problems while following this guide, or have any other concerns, please let us know by opening an issue [here](https://github.com/approov/quickstart-ruby-on-rails-token-check/issues) and we will be happy to assist you.
